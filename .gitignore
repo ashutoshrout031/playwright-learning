@@ -1,0 +1,6 @@
+REQ_FILES/
+.pytest_cache/
+.vscode/
+DOcs/
+__pycache__/
+testing_venv/

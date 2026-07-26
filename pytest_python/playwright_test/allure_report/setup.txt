@@ -1,0 +1,18 @@
+1. Install allure-pytest plugin : pip install allure-pytest
+
+2. Install Allure Command-Line Tool (to view and generate reports) : https://github.com/allure-framework/allure2/releases 
+
+3. Config Allure in pytest.ini
+
+4. Attach Screenshots on Test Failures(conftest.py)
+
+5. Create and Run Tests
+
+6. Generate and View the Allure reports   
+--> allure serve reports/allure-results    ---> temporary at runtime
+--> allure generate reports/allure-results -o reports/allure-report --clean  ---> permanent report
+
+--> allure generate reports/allure-results -o reports/allure-report --clean --single-file  ---> optional
+--> allure open reports/allure-report
+
+
