@@ -14,7 +14,7 @@ def test_create_booking(playwright:Playwright):
 
     # Load the data from external json file
 
-    file = open("post_request_body.json","r")
+    file = open("json_test_data/post_request_body.json","r")
     request_body = json.load(file)
 
     response = req_ctnxt.post(f"{base_url}/booking",data=request_body)
