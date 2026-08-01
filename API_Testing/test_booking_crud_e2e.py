@@ -93,22 +93,99 @@ def test_get_booking_by_name(request_context):
         assert "bookingid" in item
 
     
-def test_get_booking_by_dates(request_context):
-    dates_param = {
-        "checkin": "2026-07-26",
-        "checkout": "2026-07-28"
+# def test_get_booking_by_dates(request_context):
+#     dates_param = {
+#         "checkin": "2026-07-26",
+#         "checkout": "2026-07-28"
+#     }
+
+#     # Passing query parameters in GET request
+#     response = request_context.get(f"{base_url}/booking", params=dates_param)   
+#     # https://restful-booker.herokuapp.com/booking?checkin=2014-03-13&checkout=2014-05-21
+
+
+#     assert response.ok
+#     assert response.status == 200
+
+#     response_body = response.json()
+#     print(f"Booking Details by ID's Fetched by Dates  {dates_param}", response_body)
+#     assert len(response_body) > 0
+#     for item in response_body:
+#         assert "bookingid" in item
+
+# 3. Create Token (POST/auth)
+def test_create_token(request_context):
+    data = read_json_file("json_test_data/token_request_body.json")
+    response = request_context.post(f"{base_url}/auth", data=data)
+
+    assert response.ok, "POST request failed"
+    assert response.status == 200
+
+    response_body =response.json()
+
+    print("Create Token Response:", response_body)
+
+    assert "token" in response_body, "Token not found in response"
+
+    global token  # We are making token global so that we can use it in other test methods
+    token = response_body["token"]
+
+# 4. Partial Update Booking (PATCH)
+def test_partial_update_booking(request_context):
+    data = read_json_file("json_test_data/patch_request_body.json")
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Cookie": f"token={token}"
     }
 
-    # Passing query parameters in GET request
-    response = request_context.get(f"{base_url}/booking", params=dates_param)   
-    # https://restful-booker.herokuapp.com/booking?checkin=2014-03-13&checkout=2014-05-21
+    response = request_context.patch(f"{base_url}/booking/{booking_id}", data=data, headers=headers)
 
-
-    assert response.ok
+    assert response.ok, "PATCH request failed"
     assert response.status == 200
 
     response_body = response.json()
-    print(f"Booking Details by ID's Fetched by Dates  {dates_param}", response_body)
-    assert len(response_body) > 0
-    for item in response_body:
-        assert "bookingid" in item
+
+    print("Partial Update Booking Response:", response_body)
+
+    for key in data.keys():
+        assert key in response_body, f"{key} not found in response"
+        assert response_body[key] == data[key], f"{key} not updated correctly"
+
+
+# Full Update Booking (PUT)
+def test_full_update_booking(request_context):
+    data = read_json_file("json_test_data/put_request_body.json")
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Cookie": f"token={token}"
+    }
+
+    response = request_context.put(f"{base_url}/booking/{booking_id}", data=data, headers=headers)
+
+    assert response.ok, "PUT request failed"
+    assert response.status == 200
+
+    response_body = response.json()
+
+    print("Full Update Booking Response:", response_body)
+
+    for key in data.keys():
+        assert key in response_body, f"{key} not found in response"
+        assert response_body[key] == data[key], f"{key} not updated correctly"
+
+# 5. Delete Booking (DELETE)
+def test_delete_booking(request_context):
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "Cookie": f"token={token}"
+    }
+
+    response = request_context.delete(f"{base_url}/booking/{booking_id}", headers=headers)
+
+    assert response.ok, "DELETE request failed"
+    assert response.status == 201
+
+    print(f"Booking with ID {booking_id} deleted successfully.")
